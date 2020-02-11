@@ -1,5 +1,4 @@
 #!/bin/bash
-set -x
 if [ -z "$1" ] || [ "${1:0:1}" == '-' ]; then
     set -- slapd -d1 -h ldap://:$LdapPort/ "$@"
 fi
@@ -13,7 +12,10 @@ if [ $(basename $1) == 'slapd' ]; then
     then
 
         if [ -n "$LDAP_SUFFIX" ]; then
-            #[ -z "$LDAP_ROOT_PASSWORD" ] && LDAP_ROOT_PASSWORD=$(pwgen -1 32) && echo $LDAP_ROOT_PASSWORD
+            if [ -z "$LDAP_ROOT_PASSWORD" ]; then
+		   LDAP_ROOT_PASSWORD=$(pwgen -1 32)
+		   echo $LDAP_ROOT_PASSWORD
+	   fi
             sed -r -e "s/%SUFFIX%/$LDAP_SUFFIX/g" /backend.ldif | \
             sed -r -e "s/%ROOT_PASSWORD%/$LDAP_ROOT_PASSWORD/g" | \
             ldapadd -v -H ldapi:/// -Y external
