@@ -1,6 +1,8 @@
 FROM debian:stretch-slim
 MAINTAINER Herwig Bogaert 
 
+ARG SlapdUserId=1001
+ENV SlapdUserId $SlapdUserId
 ARG LdapPort=8389
 ENV LdapPort $LdapPort
 # use unpriviliged port!
@@ -22,10 +24,12 @@ COPY configure_ldap_access.sh /usr/local/bin/
 COPY backend.ldif /
 
 # Arange access so that the containr can run non-privileged
-# Enable passwordless access via shared memory for openldap user
+# Enable passwordless access via shared memory for SlapdUserId
 RUN /usr/local/bin/configure_ldap_access.sh
 
 # Run as a non-privileged container
-USER openldap
+RUN chown -R $SlapdUserId /etc/ldap
+RUN chown -R $SlapdUserId /var/run/slapd
+USER 1001
 
 ENTRYPOINT ["docker-entrypoint.sh"]
