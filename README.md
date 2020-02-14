@@ -5,8 +5,6 @@ A generic [openldap](https://openldap.org) container.
 
 ## Build Arguments
 
-- `SlapdUserId`: (optional, default 1001) Uid of the user that runs the slapd proces. If an existing
-    database is mounted in the container, the files must be accessible by this uid.
 - `LdapPort`: (optional, default 8389) Port on which the slapd daemon listens. Must be unprivilged.
     
 
@@ -24,6 +22,8 @@ argument `LdapPort`.
 When `LDAP_SUFFIX` is not set or empty, no backend will be created.  This
 allows to create a custom backend by dropping an ldif file in
 /docker-entrypoint-init/ (see below).
+
+The container can be run as any user as long as the user's gid=0.
 
 ## Customize or extend
 
